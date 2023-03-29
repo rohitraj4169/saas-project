@@ -7,10 +7,22 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag "https://js.stripe.com/v2/" %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+     <%= bootstrap_icon "check", width: 5, height: 5, fill: "blue" %>
+    
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="d-flex flex-column"> 
+    <%=render 'layouts/navigation' %>
+    <div id="page-content">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <p><%= notice %></p>
+        <p><%= alert %></p>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      </div>
+      <%= yield %>
+    </div>
+    <%=render 'layouts/footer' %>
   </body>
 </html>

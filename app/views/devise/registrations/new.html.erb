@@ -1,0 +1,107 @@
+<script language="JavaScript">
+  Stripe.setPublishableKey("<%= ENV['STRIPE_TEST_PUBLISHABLE_KEY'] %>");
+</script>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-10">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="text-center"><%= t('.sign_up', :default => "Sign up") %></h4>
+        </div>
+        <div class="panel-body">
+          <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), html: { Plan: "form", class: 'cc_form' }) do |f| %>
+            <div class="form-group">
+              <%= f.label :email %>
+              <%= f.email_field :email, autofocus: true, class: "form-control" %>
+            </div>
+            <div class="form-group">
+              <%= f.label :password %><br />
+              <%= f.password_field :password, class: "form-control" %>
+            </div>
+            <div class="form-group">
+              <%= f.label :password_confirmation %>
+              <%= f.password_field :password_confirmation, class: "form-control" %>
+            </div>
+            
+            <div class="form-group ">
+              <%= f.label :organization, 'Organization' %>
+              <span class='description'>(Unique name for your group or organization for the new account)</span>
+              <%= f.text_field :organization, required: true, class: "form-control" %>
+            </div>
+            <div class="form-group">
+              <%= f.label :plan %>
+              <%= f.select :plan, options_for_select(Plan.options, params[:plan]), {:prompt => 'Select your plan'},  required: true, 
+              class: "form-control",id:"demo"  %>
+            </div>
+            <div id="d1" style="display:none;">
+              <%= fields_for( :payment ) do |p| %>
+                <div class="row col-md-12">
+                  <div class="form-group col-md-4 no-left-padding">
+                    <%= p.label :card_number, "Card Number", data: { stripe: 'label' } %>
+                    <%= p.text_field :card_number, class: "form-control",
+                    data: { stripe: 'number' } %>
+                  </div>
+
+                  <div class="form-group col-md-2">
+                    <%= p.label :card_cvv, "Card CVV", data: { stripe: 'label' } %>
+                    <%= p.text_field :card_cvv, class: "form-control",
+                    data: { stripe: 'cvv' } %>
+                  </div>
+
+                  <div class="form-group col-md-6">
+                  
+                      <div class="col-md-6">
+                        <%= p.label :card_expires, "Card Expires", data: { stripe: 'label' } %>
+                      </div>
+                    <div class='row'>
+                      <div class="col-md-6">
+                        <%= p.select :card_expires_month,
+                        options_for_select(Payment.month_options), { include_blank: 'Month' },
+                        "data-stripe" => "exp-month",class: "form-control" %>
+                      </div>
+
+                      <div class="col-md-6">
+                        <%= p.select :card_expires_year,
+                        options_for_select(Payment.year_options.push), { include_blank: 'Year' },
+                        class: "form-control", data: { stripe: "exp-year"}%>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              <% end %>
+            </div>
+            <div class="text-center">
+            <%= f.submit t('.sign_up', :default => "Sign up"), class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="text-center">
+        <%= render "devise/shared/links" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    var userPlanSelect = document.getElementById("demo");
+    var cardDetails = document.getElementById("d1");
+
+    function showAppropriateForm() {
+      var selectedPlanId = userPlanSelect.value;
+
+      if (selectedPlanId == "premium") {
+        cardDetails.style.display = "block";
+      } else {
+        cardDetails.style.display = "none";
+      }
+    }
+
+    // Show the appropriate form when the page is loaded or when the user's Plan changes
+    showAppropriateForm();
+    userPlanSelect.addEventListener("change", showAppropriateForm);
+</script>
